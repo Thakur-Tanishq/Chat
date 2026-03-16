@@ -9,24 +9,31 @@ projectId:"chat-e7b28"
 
 firebase.initializeApp(firebaseConfig);
 
-const db=firebase.database();
+const db = firebase.database();
 
 let username=""
-let deviceId=localStorage.getItem("deviceId")
+let isAdmin=false
+
+let deviceId = localStorage.getItem("deviceId")
 
 if(!deviceId){
 
-deviceId=Math.random().toString(36)
+deviceId = Math.random().toString(36).substr(2)
 localStorage.setItem("deviceId",deviceId)
 
 }
+
 
 function login(){
 
 username=document.getElementById("username").value
 const pass=document.getElementById("password").value
 
-if(pass!=="aditi777" && pass!=="admin777"){
+if(pass==="admin777"){
+
+isAdmin=true
+
+}else if(pass!=="aditi777"){
 
 document.getElementById("error").innerText="Wrong password"
 return
@@ -44,6 +51,12 @@ db.ref("online/"+deviceId).remove()
 
 }
 
+if(isAdmin){
+
+adminTools()
+
+}
+
 loadMessages()
 
 }
@@ -58,7 +71,8 @@ document.getElementById("online").innerText="Online: "+snap.numChildren()
 
 function sendMessage(){
 
-const text=document.getElementById("message").value
+const input=document.getElementById("message")
+const text=input.value.trim()
 
 if(text==="") return
 
@@ -72,7 +86,7 @@ time:time
 
 })
 
-document.getElementById("message").value=""
+input.value=""
 
 }
 
