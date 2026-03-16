@@ -112,3 +112,6 @@ if(e.key === "Enter"){
 sendMessage();
 }
 });
+db.ref("connectionTest").set({
+status:"connected"
+});
