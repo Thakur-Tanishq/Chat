@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Private Chat</title>
 
 <style>
@@ -10,19 +11,54 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Arial;
+font-family:Arial, Helvetica, sans-serif;
 }
 
 body{
 background:#020617;
+color:white;
 height:100vh;
 width:100vw;
+}
+
+/* LOGIN SCREEN */
+
+#lockPage{
+height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+gap:25px;
+}
+
+#lockPage h2{
+font-size:40px;
+}
+
+#lockPage input{
+padding:20px;
+font-size:20px;
+border:none;
+border-radius:15px;
+width:320px;
+}
+
+#lockPage button{
+padding:20px;
+font-size:20px;
+border:none;
+border-radius:15px;
+background:#22c55e;
+color:white;
+cursor:pointer;
+width:240px;
 }
 
 /* CHAT PAGE */
 
 #chatPage{
-display:flex;
+display:none;
 flex-direction:column;
 height:100vh;
 width:100vw;
@@ -130,7 +166,7 @@ background:#ef4444;
 
 <body>
 
-<!-- LOGIN -->
+<!-- PASSWORD / LOGIN PAGE -->
 
 <div id="lockPage">
 
@@ -146,8 +182,7 @@ background:#ef4444;
 
 </div>
 
-
-<!-- CHAT -->
+<!-- CHAT PAGE -->
 
 <div id="chatPage">
 
