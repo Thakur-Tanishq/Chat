@@ -9,7 +9,6 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const db = firebase.database();
 
 let username="";
@@ -47,9 +46,7 @@ document.getElementById("error").innerText="Wrong password or username";
 
 db.ref("online").on("value",(snap)=>{
 
-const count=snap.numChildren();
-
-document.getElementById("online").innerText="Online: "+count;
+document.getElementById("online").innerText="Online: "+snap.numChildren();
 
 });
 
@@ -64,28 +61,40 @@ const data=snap.val();
 
 const div=document.createElement("div");
 
-div.className="message";
+div.classList.add("message");
 
-div.innerText=data.user+": "+data.text;
+if(data.user===username){
+
+div.classList.add("me");
+
+}else{
+
+div.classList.add("other");
+
+db.ref("messages/"+snap.key+"/seen").set(true);
+
+}
+
+let tick="";
+
+if(data.user===username){
+
+tick=data.seen ? "✓✓" : "✓";
+
+}
+
+div.innerHTML=data.user+": "+data.text+" <span class='tick'>"+tick+"</span>";
 
 chat.appendChild(div);
 
 chat.scrollTop=chat.scrollHeight;
-
-/* self destruct */
-
-setTimeout(()=>{
-
-db.ref("messages/"+snap.key).remove();
-
-},10000);
 
 });
 
 }
 
 
-/* SEND MESSAGE */
+/* SEND */
 
 function sendMessage(){
 
@@ -98,7 +107,8 @@ const id=Date.now();
 db.ref("messages/"+id).set({
 
 user:username,
-text:text
+text:text,
+seen:false
 
 });
 
@@ -117,7 +127,7 @@ setTimeout(()=>{
 
 db.ref("typing").set("");
 
-},1200);
+},1000);
 
 }
 
@@ -128,10 +138,15 @@ typingDiv.innerText=snap.val();
 });
 
 
-/* CLEAR CHAT */
+/* CLEAR */
 
 function clearChat(){
 
+if(confirm("Delete all messages?")){
+
 db.ref("messages").remove();
+chat.innerHTML="";
+
+}
 
 }
