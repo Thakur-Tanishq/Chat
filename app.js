@@ -1,48 +1,59 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyDykC9suuhhL8Krhui2t6npS-LJy_k_YFc",
-  authDomain: "chat-e7b28.firebaseapp.com",
-  databaseURL: "https://chat-e7b28-default-rtdb.firebaseio.com",
-  projectId: "chat-e7b28",
-  storageBucket: "chat-e7b28.firebasestorage.app",
-  messagingSenderId: "276902406806",
-  appId: "1:276902406806:web:1b7bab41defb69e3a770b7"
+
+apiKey:"AIzaSyDykC9suuhhL8Krhui2t6npS-LJy_k_YFc",
+authDomain:"chat-e7b28.firebaseapp.com",
+databaseURL:"https://chat-e7b28-default-rtdb.firebaseio.com",
+projectId:"chat-e7b28"
+
 };
 
 firebase.initializeApp(firebaseConfig);
+
 const db = firebase.database();
 
 let username="";
 
-const chat=document.getElementById("chat");
-const typingDiv=document.getElementById("typing");
+/* DEVICE ID (prevents duplicate online count) */
 
+let deviceId = localStorage.getItem("deviceId");
+
+if(!deviceId){
+
+deviceId=Math.random().toString(36).substring(2);
+localStorage.setItem("deviceId",deviceId);
+
+}
 
 /* LOGIN */
 
 function login(){
 
-const pass=document.getElementById("password").value;
 username=document.getElementById("username").value;
+const pass=document.getElementById("password").value;
 
-if(pass==="aditi777" && username!=""){
+if(pass!=="aditi777"){
+
+document.getElementById("error").innerText="Wrong password";
+return;
+
+}
 
 document.getElementById("lockPage").style.display="none";
 document.getElementById("chatPage").style.display="flex";
 
-db.ref("online/"+username).set(true);
+/* ONLINE SYSTEM */
 
-startChat();
+const onlineRef=db.ref("online/"+deviceId);
 
-}else{
+onlineRef.set(username);
 
-document.getElementById("error").innerText="Wrong password or username";
+onlineRef.onDisconnect().remove();
+
+loadMessages();
 
 }
 
-}
-
-
-/* ONLINE USERS */
+/* ONLINE COUNT */
 
 db.ref("online").on("value",(snap)=>{
 
@@ -50,10 +61,29 @@ document.getElementById("online").innerText="Online: "+snap.numChildren();
 
 });
 
+/* SEND MESSAGE */
 
-/* CHAT */
+function sendMessage(){
 
-function startChat(){
+const input=document.getElementById("message");
+const text=input.value.trim();
+
+if(text==="") return;
+
+db.ref("messages").push({
+
+user:username,
+text:text
+
+});
+
+input.value="";
+
+}
+
+/* LOAD MESSAGES */
+
+function loadMessages(){
 
 db.ref("messages").on("child_added",(snap)=>{
 
@@ -71,82 +101,34 @@ div.classList.add("me");
 
 div.classList.add("other");
 
-db.ref("messages/"+snap.key+"/seen").set(true);
-
 }
 
-let tick="";
+div.innerText=data.user+": "+data.text;
 
-if(data.user===username){
+document.getElementById("chat").appendChild(div);
 
-tick=data.seen ? "✓✓" : "✓";
+/* AUTO SCROLL */
 
-}
-
-div.innerHTML=data.user+": "+data.text+" <span class='tick'>"+tick+"</span>";
-
-chat.appendChild(div);
-
-chat.scrollTop=chat.scrollHeight;
+document.getElementById("chat").scrollTop=
+document.getElementById("chat").scrollHeight;
 
 });
 
 }
 
-
-/* SEND */
-
-function sendMessage(){
-
-const text=document.getElementById("message").value;
-
-if(text==="") return;
-
-const id=Date.now();
-
-db.ref("messages/"+id).set({
-
-user:username,
-text:text,
-seen:false
-
-});
-
-document.getElementById("message").value="";
-
-}
-
-
-/* TYPING */
-
-function typing(){
-
-db.ref("typing").set(username+" typing...");
-
-setTimeout(()=>{
-
-db.ref("typing").set("");
-
-},1000);
-
-}
-
-db.ref("typing").on("value",(snap)=>{
-
-typingDiv.innerText=snap.val();
-
-});
-
-
-/* CLEAR */
+/* CLEAR CHAT */
 
 function clearChat(){
 
-if(confirm("Delete all messages?")){
-
 db.ref("messages").remove();
-chat.innerHTML="";
+document.getElementById("chat").innerHTML="";
 
 }
 
-}
+/* ENTER KEY SEND */
+
+document.addEventListener("keypress",(e)=>{
+
+if(e.key==="Enter") sendMessage();
+
+});
