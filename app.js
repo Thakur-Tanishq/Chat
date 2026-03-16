@@ -72,15 +72,13 @@ const text = input.value.trim();
 if(text === "") return;
 
 db.ref("messages").push({
-user: username,
-text: text
-})
-.then(()=>{
-input.value="";
-})
-.catch((error)=>{
-console.error("Message failed:", error);
-alert("Message failed to send");
+    user: username,
+    text: text,
+    time: Date.now()
+}).then(()=>{
+    input.value="";
+}).catch((error)=>{
+    console.log(error);
 });
 
 }
