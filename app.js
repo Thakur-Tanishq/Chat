@@ -1,13 +1,8 @@
 // FIREBASE CONFIG
-const firebaseConfig = {
-apiKey:"AIzaSyDykC9suuhhL8Krhui2t6npS-LJy_k_YFc",
-authDomain:"chat-e7b28.firebaseapp.com",
-databaseURL:"https://chat-e7b28-default-rtdb.firebaseio.com",
-projectId:"chat-e7b28"
-};
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+<script src="app.js"></script>
 
 let username = "";
 
